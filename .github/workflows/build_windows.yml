@@ -74,8 +74,8 @@ jobs:
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgGitCommitId: 2024.01.12
-          vcpkgArguments: openssl:x64-windows
+          runVcpkgInstall: true
+      
 
       - name: Configure (Release)
         env:
@@ -97,6 +97,7 @@ jobs:
             -DUSE_BUNDLED_ZLIB=1 `
             -DUSE_SSH:STRING=localbuild `
             -DUSE_SYSTEM_OPENSSL=ON `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
             $env:CMAKE_FLAGS `
             ..\..
