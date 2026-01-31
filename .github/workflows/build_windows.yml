@@ -71,11 +71,11 @@ jobs:
       - name: Install NASM
         uses: ilammy/setup-nasm@v1.2.0
 
-      - name: Build OpenSSL
-        run: |
-          cd dep/openssl/openssl
-          perl Configure VC-WIN64A
-          nmake
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: 2024.01.12
+          vcpkgArguments: openssl:x64-windows
 
       - name: Configure (Release)
         env:
@@ -96,7 +96,8 @@ jobs:
             -DUSE_SYSTEM_LIBSSH2=OFF `
             -DUSE_BUNDLED_ZLIB=1 `
             -DUSE_SSH:STRING=localbuild `
-            -DUSE_SYSTEM_OPENSSL=OFF `
+            -DUSE_SYSTEM_OPENSSL=ON `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
             $env:CMAKE_FLAGS `
             ..\..
 
