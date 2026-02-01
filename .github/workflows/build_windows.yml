@@ -77,6 +77,14 @@ jobs:
       - name: Install NASM
         uses: ilammy/setup-nasm@v1.2.0
 
+      - name: Install Visual Studio components
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Bootstrap vcpkg
+        run: |
+          cd $env:GITHUB_WORKSPACE\vcpkg
+          .\bootstrap-vcpkg.bat -disableMetrics
+
       - name: Export VCPKG_ROOT
         run: echo "VCPKG_ROOT=${{ github.workspace }}\\vcpkg" >> $env:GITHUB_ENV
               
@@ -85,13 +93,10 @@ jobs:
         with:
           runVcpkgInstall: true
           vcpkgJsonGlob: '**/vcpkg.json'
+          vcpkgTriplet: x64-windows
         env:
           VCPKG_LOG: 1
-
-
-      - name: Export VCPKG_ROOT
-        run: echo "VCPKG_ROOT=${{ github.workspace }}\\vcpkg" >> $env:GITHUB_ENV
-
+          VCPKG_VERBOSE: 1
 
       - name: Configure (Release)
         env:
