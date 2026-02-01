@@ -40,6 +40,12 @@ jobs:
       - name: Initialize submodules
         uses: snickerbockers/submodules-init@v4
 
+      - name: Update submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive --force
+
+
       - name: Install Perl
         uses: shogo82148/actions-setup-perl@v1
         with:
@@ -71,11 +77,16 @@ jobs:
       - name: Install NASM
         uses: ilammy/setup-nasm@v1.2.0
 
+      - name: Export VCPKG_ROOT
+        run: echo "VCPKG_ROOT=${{ github.workspace }}\\vcpkg" >> $env:GITHUB_ENV
+        
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           runVcpkgInstall: true
           vcpkgJsonGlob: '**/vcpkg.json'
+          vcpkgArguments: 'install --recurse --verbose'
+
 
       - name: Export VCPKG_ROOT
         run: echo "VCPKG_ROOT=${{ github.workspace }}\\vcpkg" >> $env:GITHUB_ENV
