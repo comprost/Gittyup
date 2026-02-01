@@ -93,10 +93,12 @@ jobs:
         with:
           runVcpkgInstall: true
           vcpkgJsonGlob: '**/vcpkg.json'
-          vcpkgTriplet: x64-windows
         env:
+          VCPKG_ROOT: ${{ github.workspace }}\vcpkg
+          VCPKG_DEFAULT_TRIPLET: x64-windows
           VCPKG_LOG: 1
           VCPKG_VERBOSE: 1
+
 
       - name: Configure (Release)
         env:
