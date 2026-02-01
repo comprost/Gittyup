@@ -79,13 +79,14 @@ jobs:
 
       - name: Export VCPKG_ROOT
         run: echo "VCPKG_ROOT=${{ github.workspace }}\\vcpkg" >> $env:GITHUB_ENV
-        
-      - name: Setup vcpkg
+              
+      - name: Setup vcpkg (verbose)
         uses: lukka/run-vcpkg@v11
         with:
           runVcpkgInstall: true
           vcpkgJsonGlob: '**/vcpkg.json'
-          vcpkgArguments: 'install --recurse --verbose'
+        env:
+          VCPKG_LOG: 1
 
 
       - name: Export VCPKG_ROOT
