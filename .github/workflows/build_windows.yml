@@ -45,7 +45,6 @@ jobs:
           git submodule sync --recursive
           git submodule update --init --recursive --force
 
-
       - name: Install Perl
         uses: shogo82148/actions-setup-perl@v1
         with:
@@ -80,6 +79,9 @@ jobs:
       - name: Install Visual Studio components
         uses: microsoft/setup-msbuild@v1
 
+      # -------------------------------
+      # vcpkg setup with verbose logging
+      # -------------------------------
       - name: Bootstrap vcpkg
         run: |
           cd $env:GITHUB_WORKSPACE\vcpkg
@@ -87,19 +89,28 @@ jobs:
 
       - name: Export VCPKG_ROOT
         run: echo "VCPKG_ROOT=${{ github.workspace }}\\vcpkg" >> $env:GITHUB_ENV
-              
-      - name: Setup vcpkg (verbose)
+
+      - name: Update vcpkg repository
+        run: |
+          cd $env:GITHUB_WORKSPACE\vcpkg
+          git pull --ff-only
+          .\vcpkg update
+
+      - name: Install dependencies via vcpkg (verbose)
         uses: lukka/run-vcpkg@v11
         with:
           runVcpkgInstall: true
           vcpkgJsonGlob: '**/vcpkg.json'
+          verbose: true
         env:
           VCPKG_ROOT: ${{ github.workspace }}\vcpkg
           VCPKG_DEFAULT_TRIPLET: x64-windows
           VCPKG_LOG: 1
           VCPKG_VERBOSE: 1
 
-
+      # -------------------------------
+      # CMake configure, build, package
+      # -------------------------------
       - name: Configure (Release)
         env:
           CMAKE_RC_FLAGS: "/C 1252"
@@ -124,8 +135,6 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
             $env:CMAKE_FLAGS `
             ..\..
-
-
 
       - name: Build information
         run: |
