@@ -1,0 +1,9 @@
+{
+  "name": "gittyup",
+  "version-string": "0.0.0",
+  "dependencies": [
+    "openssl",
+    "libssh2",
+    "zlib"
+  ]
+}
