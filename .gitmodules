@@ -28,3 +28,6 @@
 [submodule "dep/lua/lua"]
 	path = dep/lua/lua
 	url = https://github.com/lua/lua.git
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg.git
