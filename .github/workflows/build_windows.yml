@@ -23,19 +23,18 @@ jobs:
           - version: 6.6.0
 
     steps:
+      # -------------------------------
+      # Git configuration & checkout
+      # -------------------------------
       - name: Set git identity
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      - name: Configure development build
-        if: github.ref_type != 'tag'
-        uses: allenevans/set-env@c4f231179ef63887be707202a295d9cb1c687eb9
-        with:
-          CMAKE_FLAGS: '-DDEV_BUILD="${{ github.ref_name }}"'
-
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # needed for submodules and full history
 
       - name: Initialize submodules
         uses: snickerbockers/submodules-init@v4
@@ -45,6 +44,18 @@ jobs:
           git submodule sync --recursive
           git submodule update --init --recursive --force
 
+      # -------------------------------
+      # Development build configuration
+      # -------------------------------
+      - name: Configure development build
+        if: github.ref_type != 'tag'
+        uses: allenevans/set-env@c4f231179ef63887be707202a295d9cb1c687eb9
+        with:
+          CMAKE_FLAGS: '-DDEV_BUILD="${{ github.ref_name }}"'
+
+      # -------------------------------
+      # Install dependencies
+      # -------------------------------
       - name: Install Perl
         uses: shogo82148/actions-setup-perl@v1
         with:
@@ -80,7 +91,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1
 
       # -------------------------------
-      # vcpkg setup with verbose logging
+      # vcpkg setup (manifest mode)
       # -------------------------------
       - name: Bootstrap vcpkg
         run: |
@@ -90,13 +101,7 @@ jobs:
       - name: Export VCPKG_ROOT
         run: echo "VCPKG_ROOT=${{ github.workspace }}\\vcpkg" >> $env:GITHUB_ENV
 
-      - name: Update vcpkg repository
-        run: |
-          cd $env:GITHUB_WORKSPACE\vcpkg
-          git pull --ff-only
-          .\vcpkg update
-
-      - name: Install dependencies via vcpkg (verbose)
+      - name: Install dependencies via vcpkg (manifest)
         uses: lukka/run-vcpkg@v11
         with:
           runVcpkgInstall: true
