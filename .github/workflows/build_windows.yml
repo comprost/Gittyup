@@ -74,11 +74,12 @@ jobs:
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgDirectory: ${{ github.workspace }}/_vcpkg
           runVcpkgInstall: true
-    
+          vcpkgJsonGlob: '**/vcpkg.json'
+
       - name: Export VCPKG_ROOT
-        run: echo "VCPKG_ROOT=${{ github.workspace }}\\_vcpkg" >> $env:GITHUB_ENV
+        run: echo "VCPKG_ROOT=${{ github.workspace }}\\vcpkg" >> $env:GITHUB_ENV
+
 
       - name: Configure (Release)
         env:
